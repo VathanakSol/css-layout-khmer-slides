@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ការបង្ហាញអំពី CSS Layout (ភាសាខ្មែរ)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@300;400;700;900&family=Moul&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1b2a;--bg2:#1b263b;--card:#f1faee;--ink:#1d3557;
+  --accent:#e63946;--accent2:#457b9d;--gold:#ffb703;--green:#2a9d8f;
+}
+body{
+  font-family:'Battambang',sans-serif;background:var(--bg);color:var(--card);
+  overflow:hidden;height:100vh;
+}
+.slide{
+  display:none;height:calc(100vh - 70px);padding:40px 60px;overflow-y:auto;
+  animation:fade .45s ease;
+}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+h1{font-family:'Moul',serif;font-size:clamp(28px,4vw,52px);line-height:1.6;color:var(--gold)}
+h2{font-size:clamp(22px,3vw,38px);color:var(--gold);margin-bottom:22px;line-height:1.5;
+   border-left:8px solid var(--accent);padding-left:18px}
+h3{font-size:clamp(18px,2vw,26px);color:var(--accent2);margin:18px 0 10px}
+p,li{font-size:clamp(15px,1.6vw,21px);line-height:1.9;margin-bottom:10px}
+ul{list-style:none}
+ul li::before{content:"◆ ";color:var(--accent);font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+@media(max-width:850px){.grid{grid-template-columns:1fr}}
+.card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;padding:20px 24px;margin-bottom:16px}
+.card.alt{background:rgba(230,57,70,.13);border-color:rgba(230,57,70,.4)}
+.card.ok{background:rgba(42,157,143,.14);border-color:rgba(42,157,143,.45)}
+code,pre{font-family:'Courier New',monospace}
+pre{background:#011627;color:#e0fbfc;border-left:5px solid var(--gold);
+    border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:clamp(12px,1.25vw,17px);
+    line-height:1.75;margin:12px 0}
+.pre-km{color:#ffb703;font-family:'Battambang',sans-serif;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:clamp(13px,1.4vw,19px)}
+th,td{border:1px solid rgba(255,255,255,.2);padding:10px 12px;text-align:left;line-height:1.6}
+th{background:var(--accent2);color:#fff}
+tr:nth-child(even) td{background:rgba(255,255,255,.05)}
+.tag{display:inline-block;background:var(--accent);color:#fff;border-radius:20px;
+     padding:3px 14px;font-size:14px;margin-bottom:14px;font-weight:700}
+.center{display:flex;flex-direction:column;justify-content:center;align-items:center;
+        text-align:center;height:100%}
+.num{font-family:'Moul',serif;font-size:clamp(50px,8vw,110px);color:var(--accent);opacity:.35}
+/* demo boxes */
+.demo{background:#011627;border-radius:10px;padding:16px;margin-top:12px}
+.box{background:var(--gold);color:#011627;font-weight:900;padding:12px 16px;
+     border-radius:8px;margin:6px;text-align:center}
+.box.b2{background:var(--accent);color:#fff}
+.box.b3{background:var(--green);color:#fff}
+.flexrow{display:flex}
+.flexcol{display:flex;flex-direction:column}
+.gridex{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+/* nav */
+.nav{position:fixed;bottom:0;left:0;right:0;height:70px;background:#011627;
+     display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+     border-top:3px solid var(--accent);z-index:50}
+.nav button{background:var(--accent2);color:#fff;border:0;border-radius:8px;
+            padding:10px 20px;font-family:'Battambang',sans-serif;font-size:16px;
+            cursor:pointer;font-weight:700}
+.nav button:hover{background:var(--accent)}
+.dots{display:flex;gap:7px;flex-wrap:wrap;max-width:55%;justify-content:center}
+.dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer}
+.dot.on{background:var(--gold);transform:scale(1.4)}
+.count{color:var(--gold);font-weight:700;min-width:70px;text-align:right}
+.bar{position:fixed;top:0;left:0;height:5px;background:var(--accent);transition:width .3s;z-index:60}
+.note{font-size:15px;color:#a8dadc;font-style:italic;margin-top:8px}
+kbd{background:#33415c;border-radius:5px;padding:2px 8px;font-size:13px;border:1px solid #56688a}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<main id="slides">
+
+<section class="slide active">
+ <div class="center">
+  <span class="tag">មេរៀនអភិវឌ្ឍន៍វេបសាយ</span>
+  <h1>CSS Layout</h1>
+  <p style="max-width:760px">ការរចនាប្លង់ទំព័រវេបសាយ — Flow, Flexbox, Grid និង Responsive Design</p>
+  <p class="note">ប្រើ ← → ដើម្បីផ្លាស់ប្តូរស្លាយ • B = ខ្មៅ/ស • F = អេក្រង់ពេញ</p>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">01</span> សេចក្ដីផ្ដើម៖ CSS Layout គឺជាអ្វី?</h2>
+ <div class="grid">
+  <div>
+   <p>CSS Layout គឺជារបៀបដែលយើងកំណត់<strong>ទីតាំង ទំហំ និងលំដាប់</strong>របស់ធាតុ HTML នៅលើអេក្រង់។</p>
+   <div class="card"><h3>ហេតុអ្វីសំខាន់?</h3>
+    <ul><li>អ្នកអានយល់រចនាសម្ព័ន្ធទំព័រភ្លាមៗ</li><li>ធ្វើឱ្យវេបសាយប្រើបានលើទូរស័ព្ទ</li><li>កាត់បន្ថយការសរសេរ code ដែលច្រេះ</li></ul>
+   </div>
+  </div>
+  <div>
+   <div class="card alt"><h3>បច្ចេកវិទ្យាសំខាន់ៗ ៤</h3>
+    <ul><li>Normal Flow + Box Model</li><li>Positioning &amp; Display</li><li>Flexbox (1 ទិស)</li><li>CSS Grid (2 dimensions)</li></ul>
+   </div>
+   <p class="note">💡 មេរៀននេះប្រើឧទាហរណ៍ពិតៗ ដែលអ្នកអាចមើលឃើញលទ្ធផលភ្លាម។</p>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">02</span> Box Model — គ្រប់ធាតុគឺជាប្រអប់</h2>
+ <p>ធាតុ HTML នីមួយៗមាន ៤ ស្រទាប់៖ <strong>content → padding → border → margin</strong></p>
+ <div class="demo">
+  <div style="border:3px dashed var(--accent);padding:14px;border-radius:10px">
+   <span class="box" style="display:block;background:#56688a;color:#fff;margin:0 0 8px">margin (ទំនេរខាងក្រៅ)</span>
+   <div style="border:4px solid var(--gold);padding:12px;border-radius:8px">
+    <span class="box" style="display:block;background:transparent;color:var(--gold);margin:0 0 6px">border</span>
+    <div style="background:rgba(42,157,143,.25);padding:12px;border-radius:6px">
+     <span class="box b3" style="display:block;margin:0 0 6px">padding</span>
+     <div style="background:var(--green);color:#011627;padding:10px;text-align:center;font-weight:900;border-radius:4px">CONTENT</div>
+    </div>
+   </div>
+  </div>
+ </div>
+<pre>.box{
+  width:300px;
+  padding:20px;      <span class="pre-km">// ចន្លោះខាងក្នុង</span>
+  border:4px solid;  <span class="pre-km">// គែម</span>
+  margin:16px;       <span class="pre-km">// ចន្លោះខាងក្រៅ</span>
+}</pre>
+ <p class="note">⚠️ ដោយ default ទទឹង = 300 + 40 + 8 = <strong>348px</strong>។ ប្រើ <code>box-sizing:border-box</code> ដើម្បីឱ្យ width រួមបញ្ចូល padding និង border។</p>
+</section>
+
+<section class="slide">
+ <h2><span class="num">03</span> Normal Flow &amp; Display</h2>
+ <div class="grid">
+  <div>
+   <table>
+    <tr><th>display</th><th>ឥរិយាបថ</th></tr>
+    <tr><td><code>block</code></td><td>យកទទឹងពេញ ចាប់ផ្ដើមបន្ទាត់ថ្មី (div, p, h1)</td></tr>
+    <tr><td><code>inline</code></td><td>នៅតាមបន្ទាត់ មិនកំណត់ width/height (span, a)</td></tr>
+    <tr><td><code>inline-block</code></td><td>នៅតាមបន្ទាត់ ប៉ុន្តែកំណត់ទំហំបាន (button)</td></tr>
+    <tr><td><code>none</code></td><td>លាក់ទាំងស្រុង មិនកាន់កន្លែង</td></tr>
+   </table>
+  </div>
+  <div>
+   <div class="demo">
+    <p class="note" style="margin:0 0 6px">block:</p>
+    <div class="box" style="display:block">A</div><div class="box b2" style="display:block">B</div>
+    <p class="note" style="margin:10px 0 6px">inline-block:</p>
+    <div class="box" style="display:inline-block">C</div><div class="box b2" style="display:inline-block">D</div>
+   </div>
+   <div class="card ok"><h3>Block Formatting Context</h3><p>កន្លែងដែលធាតុ block ត្រូវបានរៀបចំពីលើចុះក្រោម។ float, flex, grid, position:fixed បង្កើត BFC ថ្មីមួយ។</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">04</span> Positioning</h2>
+ <table>
+  <tr><th>value</th><th>អត្ថន័យ</th><th>ការប្រើប្រាស់ជាក់ស្ដែង</th></tr>
+  <tr><td><code>static</code></td><td>តម្លៃ default តាម flow</td><td>មិនអាចប្រើ top/left បាន</td></tr>
+  <tr><td><code>relative</code></td><td>ធៀបនឹងទីតាំងដើម កាន់កន្លែងដដែល</td><td>ដាក់ anchor ឱ្យធាតុកូន</td></tr>
+  <tr><td><code>absolute</code></td><td>ធៀបនឹង តួមេ ដែលមិន static</td><td>badge, tooltip, popup</td></tr>
+  <tr><td><code>fixed</code></td><td>ធៀបនឹង viewport មិនរំកិលតាម scroll</td><td>navbar, ប៊ូតុងទូរស័ព្ទ</td></tr>
+  <tr><td><code>sticky</code></td><td>static រហូតដល់ threshold → fixed</td><td>ក្បាលតារាងវែង</td></tr>
+ </table>
+<pre>.parent{position:relative}
+.badge{position:absolute; top:-8px; right:-8px; z-index:2}
+<nav>{position:sticky; top:0; background:#fff}</pre>
+ <p class="note">💡 គន្លឹះ៖ តែងតែកំណត់ <code>position:relative</code> ឱ្យធាតុមេ មុននឹងប្រើ absolute កូន។</p>
+</section>
+
+<section class="slide">
+ <h2><span class="num">05</span> Flexbox — រៀបធាតុតាម ១ ទិស</h2>
+ <div class="grid">
+  <div>
+<pre>.container{
+  display:flex;
+  flex-direction:row;        <span class="pre-km">// row | column</span>
+  justify-content:space-between; <span class="pre-km">// តាម main axis</span>
+  align-items:center;        <span class="pre-km">// តាម cross axis</span>
+  gap:12px;
+  flex-wrap:wrap;
+}
+.item{flex:1;}  <span class="pre-km">// grow shrink basis</span></pre>
+  </div>
+  <div>
+   <div class="demo">
+    <p class="note" style="margin:0 0 6px">justify-content: space-between</p>
+    <div class="flexrow" style="justify-content:space-between"><div class="box">1</div><div class="box b2">2</div><div class="box b3">3</div></div>
+    <p class="note" style="margin:10px 0 6px">align-items:center + flex:1</p>
+    <div class="flexrow" style="align-items:stretch;height:80px"><div class="box" style="flex:1">A</div><div class="box b2" style="flex:2">B (2x)</div><div class="box b3" style="flex:1">C</div></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">06</span> ក្ដារសេចក្ដី Flexbox Properties</h2>
+ <table>
+  <tr><th>Container</th><th>តួនាទី</th><th>Item</th><th>តួនាទី</th></tr>
+  <tr><td><code>flex-direction</code></td><td>ទិស main axis</td><td><code>flex-grow</code></td><td>ចំណែកទំនេរដែលបានបន្ថែម</td></tr>
+  <tr><td><code>justify-content</code></td><td>តម្រៀប main axis</td><td><code>flex-shrink</code></td><td>រួតនៅពេលកន្លែងមិនគ្រប់គ្រាន់</td></tr>
+  <tr><td><code>align-items</code></td><td>តម្រៀប cross axis</td><td><code>flex-basis</code></td><td>ទំហំដើមមុនរaco</td></tr>
+  <tr><td><code>flex-wrap</code></td><td>បង្ហាញជារow ថ្មី</td><td><code>align-self</code></td><td>លើកលែងសម្រាប់ item មួយ</td></tr>
+  <tr><td><code>gap</code></td><td>ចន្លោះរវាង item</td><td><code>order</code></td><td>ប្ដូរលំដាប់ដែលមើលឃើញ</td></tr>
+ </table>
+ <div class="card ok" style="margin-top:16px"><h3>ការប្រើប្រាស់ល្អបំផុត</h3>
+  <ul><li>Navbar +  menu  ស្ដាំ/ឆ្វេង</li><li>Card ដែលកម្ពស់ស្មើគ្នា</li><li>Center អានុភាព: <code>display:flex;justify-content:center;align-items:center</code></li><li>Sticky footer (<code>flex:1</code> លើ main)</li></ul>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">07</span> CSS Grid — រៀបធាតុតាម ២ ទិស</h2>
+ <div class="grid">
+  <div>
+<pre>.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:auto 1fr auto;
+  gap:16px;
+}
+.a{grid-column:1 / 4;}   <span class="pre-km">// ពេញ 3 列</span>
+.b{grid-row:2 / 4;}      <span class="pre-km">// ឆ្លង 2 行</span></pre>
+   <p class="note"><code>fr</code> = ចំណែកនៃទំនេរ។ <code>minmax()</code> និង <code>auto-fill</code> ធ្វើឱ្យ responsive ដោយមិនត្រូវការ media query។</p>
+  </div>
+  <div>
+   <div class="demo">
+    <div class="gridex"><div class="box">1</div><div class="box b2">2</div><div class="box b3">3</div><div class="box">4</div><div class="box b2">5</div><div class="box b3">6</div></div>
+    <p class="note" style="margin:10px 0 6px">Responsive ដោយ minmax:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px"><div class="box b3">A</div><div class="box">B</div><div class="box b2">C</div><div class="box b3">D</div></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">08</span> Grid Areas — រចនាប្លង់ដូចគូររូប</h2>
+<pre>.layout{
+  display:grid;
+  grid-template-areas:
+    "header header header"
+    "sidebar main   main"
+    "footer footer footer";
+  grid-template-columns:200px 1fr 1fr;
+  min-height:70vh;
+}
+.header{grid-area:header} .sidebar{grid-area:sidebar}
+.main{grid-area:main}     .footer{grid-area:footer}</pre>
+ <div class="demo">
+  <div style="display:grid;grid-template-areas:'h h h' 's m m' 'f f f';grid-template-columns:110px 1fr 1fr;gap:6px;min-height:190px">
+   <div class="box" style="grid-area:h;margin:0;display:flex;align-items:center;justify-content:center">header</div>
+   <div class="box b2" style="grid-area:s;margin:0;display:flex;align-items:center;justify-content:center">sidebar</div>
+   <div class="box b3" style="grid-area:m;margin:0;display:flex;align-items:center;justify-content:center">main</div>
+   <div class="box" style="grid-area:f;margin:0;display:flex;align-items:center;justify-content:center">footer</div>
+  </div>
+ </div>
+ <p class="note">✅ អត្ថប្រយោជន៍៖ អានងាយ ប្ដូរប្លង់សម្រាប់ mobile ដោយ change តែ grid-template-areas។</p>
+</section>
+
+<section class="slide">
+ <h2><span class="num">09</span> Flexbox ឬ Grid? តើត្រូវប្រើមួយណា</h2>
+ <div class="grid">
+  <div class="card ok"><h3>🎯 ប្រើ Flexbox នៅពេល…</h3>
+   <ul><li>តម្រៀបធាតុតាម ១ បន្ទាត់ ឬ ១ ជួរ</li><li>ទំហំធាតុមិនស្គាល់ទេ (content-driven)</li><li>navbar, button group, chip list</li><li>តម្រៀបកណ្ដាល vertical + horizontal</li></ul>
+  </div>
+  <div class="card alt"><h3>🧩 ប្រើ Grid នៅពេល…</h3>
+   <ul><li>ត្រូវការ ២ ទិស (row និង column)</li><li>រចនាសម្ព័ន្ធទំព័រទាំងមូល</li><li>gallery, dashboard, table-like layout</li><li>ចង់កំណត់ជួរទុកជាមុន (layout-driven)</li></ul>
+  </div>
+ </div>
+ <p style="margin-top:14px">💬 ពួកគេមិនប្រកួតប្រជែងគ្នាទេ — ប្រើ Grid សម្រាប់ page skeleton ហើយ Flexbox សម្រាប់ធាតុខាងក្នុង។</p>
+</section>
+
+<section class="slide">
+ <h2><span class="num">10</span> Responsive Layout</h2>
+<pre><span class="pre-km">/* Mobile-first: សរសេរ style តូចមុន */</span>
+.card-grid{display:grid;grid-template-columns:1fr;gap:16px}
+
+@media (min-width:640px){ .card-grid{grid-template-columns:repeat(2,1fr)} }
+@media (min-width:1024px){ .card-grid{grid-template-columns:repeat(3,1fr)} }</pre>
+ <div class="grid">
+  <div class="card"><h3>Technique សំខាន់</h3>
+   <ul><li><code>%</code>, <code>fr</code>, <code>auto</code> ជំនួស px ថេរ</li><li><code>clamp()</code> សម្រាប់ font-size រលូន</li><li><code>aspect-ratio</code> សម្រាប់រូបភាព</li><li><code>picture</code> + srcset សម្រាប់រូប</li></ul>
+  </div>
+  <div class="card"><h3>Unit ដែលគួរដឹង</h3>
+   <ul><li><code>rem</code> = ឯកតាមូលដ្ឋាន (accessible)</li><li><code>vw/vh</code> = % viewport</li><li><code>ch</code> = ទទឹងតួអក្សរ 0</li><li><code>dvh</code> = viewport ពិតលើ mobile</li></ul>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">11</span> លំហាត់អនុវត្ត (Class Activity)</h2>
+ <div class="grid">
+  <div>
+   <div class="card"><h3>① កម្រិតចាប់ផ្ដើម (15 នាទី)</h3><p>បង្កើត navbar: logo ឆ្វេង  links កណ្ដាល  button ស្ដាំ ដោយ Flexbox តែមួយ។</p></div>
+   <div class="card"><h3>② កម្រិតមធ្យម (25 នាទី)</h3><p>Card grid ៦ សន្លឹក: 1 列 mobile, 2 列 tablet, 3 列 desktop ដោយ <code>auto-fit + minmax</code>។</p></div>
+  </div>
+  <div>
+   <div class="card"><h3>③ កម្រិតខ្ពស់ (30 នាទី)</h3><p>Holy Grail layout ដោយ grid-areas: header / sidebar-main-aside / footer ហើយ sticky header។</p></div>
+   <div class="card alt"><h3>④ Challenge បញ្ចប់មេរៀន</h3><p>បង្កើត landing page ខ្លួនឯង 1 ទំព័រ ដែល responsive ពេញលេញ ហើយ submit លើ GitHub。</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">12</span> កំហុសទូទៅ &amp; ដំបូន្មាន</h2>
+ <div class="grid">
+  <div class="card alt"><h3>❌ កុំធ្វើ</h3>
+   <ul><li>ប្រើ float / absolute សម្រាប់ layout ទាំងមូល</li><li>កំណត់ height ថេរ ដែល content អាចលើស</li><li>ប្រើ px សម្រាប់ font-size ទាំងអស់</li><li>ភ្លេច <code>box-sizing:border-box</code></li><li> Nested grid ច្រើនពេក ដោយគ្មានហេតុផល</li></ul>
+  </div>
+  <div class="card ok"><h3>✅ គួរធ្វើ</h3>
+   <ul><li>Mobile-first ហើយ test លើ device ពិត</li><li>DevTools →  badge  flex/grid ដើម្បីមើល structure</li><li>ប្រើ <code>gap</code> ជំនួស margin hack</li><li>រក្សា semantic HTML មុន style</li><li>Check contrast និង keyboard navigation</li></ul>
+  </div>
+ </div>
+</section>
+
+<section class="slide">
+ <h2><span class="num">13</span> ធនាគារ Tool &amp; ឯកសារយោង</h2>
+ <table>
+  <tr><th>ធនាគារ</th><th>ប្រើសម្រាប់</th></tr>
+  <tr><td>MDN Web Docs (developer.mozilla.org)</td><td>ឯកសារផ្លូវការ និងពេញលេញបំផុត</td></tr>
+  <tr><td>CSS-Tricks: Complete Guide to Flexbox / Grid</td><td>ក្ដារសេចក្ដី + ឧទាហរណ៍ល្អ</td></tr>
+  <tr><td>Grid Garden / Flexbox Froggy</td><td>រៀនដោយ game (សម្រាប់សិស្ស)</td></tr>
+  <tr><td>Can I Use</td><td>ពិនិត្យ browser support</td></tr>
+  <tr><td>Chrome DevTools → Layout panel</td><td>debug box model, grid, flex</td></tr>
+ </table>
+ <p class="note" style="margin-top:16px">📚 អានបន្ថែម: "Every Layout" by Heydon Pickering &amp; Andy Bell។</p>
+</section>
+
+<section class="slide">
+ <div class="center">
+  <h1 style="font-size:clamp(26px,3.4vw,44px)">សេចក្ដីសង្ខេប</h1>
+  <div style="max-width:900px;margin-top:20px">
+   <div class="card"><p>① គ្រប់ធាតុជា box → យល់ box-model ជាមុន</p></div>
+   <div class="card"><p>② Flexbox = ១ ទិស • Grid = ២ ទិស • ប្រើរួមគ្នាបាន</p></div>
+   <div class="card"><p>③ Mobile-first + ឯកតារលូន (% fr rem clamp) = responsive ពិត</p></div>
+   <div class="card ok"><p>④ អនុវត្តច្រើនជាងទ្រឹស្ដី — បង្កើត layout ពិតជារៀងរាល់ថ្ងៃ ១៥ នាទី</p></div>
+  </div>
+  <h2 style="border:0;margin-top:26px;padding:0;color:var(--gold)">អរគុណ! សំណួរ?</h2>
+  <p class="note">គ្រូ: ________________ • ថ្ងៃទី: ________________</p>
+ </div>
+</section>
+
+</main>
+
+<nav class="nav">
+ <button id="prev">← មុន</button>
+ <div class="dots" id="dots"></div>
+ <button id="next">បន្ទាប់ →</button>
+ <span class="count" id="count"></span>
+</nav>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dots=document.getElementById('dots');
+const bar=document.getElementById('bar');
+const count=document.getElementById('count');
+let i=0;
+slides.forEach((_,n)=>{const d=document.createElement('span');d.className='dot'+(n?'':' on');
+ d.onclick=()=>go(n);dots.appendChild(d);});
+function go(n){
+ i=Math.max(0,Math.min(slides.length-1,n));
+ slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+ [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+ bar.style.width=((i+1)/slides.length*100)+'%';
+ count.textContent=(i+1)+' / '+slides.length;
+ location.hash='s'+(i+1);
+}
+document.getElementById('prev').onclick=()=>go(i-1);
+document.getElementById('next').onclick=()=>go(i+1);
+addEventListener('keydown',e=>{
+ if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(i+1);}
+ if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(i-1);}
+ if(e.key==='Home')go(0);
+ if(e.key==='End')go(slides.length-1);
+ if(e.key.toLowerCase()==='b'){document.body.classList.toggle('blackout');}
+ if(e.key.toLowerCase()==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+});
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;
+ if(Math.abs(dx)>50)go(i+(dx<0?1:-1));x0=null;},{passive:true});
+const h=location.hash.match(/^#s(\d+)$/);
+go(h?+h[1]-1:0);
+</script>
+<style>
+.blackout>*:not(.nav){filter:brightness(.06)}
+</style>
+</body>
+</html>
